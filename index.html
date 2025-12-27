@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Greeting - Getting Started</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { background: #0f0f1a; color: #00ffcc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { padding: 30px; background: rgba(255, 255, 255, 0.05); border: 1px solid #00ffcc; border-radius: 15px; text-align: center; box-shadow: 0 0 20px #00ffcc; width: 80%; max-width: 400px; }
+        input { width: 90%; padding: 12px; margin: 20px 0; border-radius: 5px; border: 1px solid #00ffcc; background: transparent; color: #fff; text-align: center; }
+        button { padding: 12px 30px; background: #00ffcc; color: #000; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #fff; box-shadow: 0 0 15px #fff; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="name" placeholder="Aapka Naam Likhein...">
+        <button onclick="go()">Open Invitation</button>
+    </div>
+    <script>
+        function go() {
+            let n = document.getElementById("name").value;
+            if(n) { window.location.href = "camera.html?name=" + encodeURIComponent(n); }
+            else { alert("Please enter your name!"); }
+        }
+    </script>
+</body>
+</html>
