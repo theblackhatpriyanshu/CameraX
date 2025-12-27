@@ -20,8 +20,8 @@ echo -e "${magenta}╚██████╗ ██║  ██║██║ ╚═
 echo -e "${red} ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝${reset}"
 echo ""
 echo -e "${cyan}----------------- CAMERAHACK ADVANCED -----------------${reset}"
-echo -e "${green}  Created by: Priyanshu Gupta (Educational Purpose)${reset}"
-echo -e "${yellow}  Subscribe: The Black Hat Priyanshu YouTube${reset}"
+echo -e "${green}  Created by: Priyanshu Gupta❤️${reset}"
+echo -e "${yellow}  Subscribe: The Black Hat Priyanshu${reset}"
 echo -e "${cyan}-------------------------------------------------------${reset}"
 echo ""
 
